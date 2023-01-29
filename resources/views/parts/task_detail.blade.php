@@ -3,7 +3,7 @@
         @include("parts.subTitle")
         <form action="/to_do_list/public/task_regist" method="POST">
         @csrf
-        @foreach($lists as $list)
+            <input type="hidden" name="id" value="{{ $list->id }}">
             <div class="item_name">タスク名</div>
             <div class="input_text">
                 <label class="ef">
@@ -34,6 +34,7 @@
                 <div class="return_button">
                     <a href="/to_do_list/public">戻る</a>
                 </div>
+                @if (Request::is('task_change/*'))
                 <div class="delete_button">
                     <input type="submit" name="delete" value="削除">
                 </div>
@@ -43,8 +44,12 @@
                 <div class="complete_button">
                     <input type="submit" name="complete" value="完了">
                 </div>
+                @elseif (Request::is('history_details/*'))
+                <div class="added_button">
+                    <input type="submit" name="update" value="今日のタスクに追加"> 
+                </div>
+                @endif
             </div>
-        @endforeach
         </form>
     </div>
 </div>

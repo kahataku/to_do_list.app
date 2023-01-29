@@ -15,22 +15,25 @@ use App\Http\Controllers\addpageController;
 |
 */
 
-Route::get('/', 'ToppageController@show');
-Route::get('/', 'ToppageController@func');
-
-Route::get('/task_add', 'addpageController@show');
-
-Route::get('/task_change', 'addpageController@show');
-Route::post('/task_change', 'addpageController@func');
-
-Route::post('/task_confirm','addpageController@form');
-
-Route::post('/task_regist','addpageController@registration');
-
-Route::get('/task_history', 'historyController@show');
-Route::get('/task_history', 'historyController@func');
-
-Route::post('/history_details','historyController@details');
-
-Route::get('/task_achieve', 'achieveController@show');
-Route::get('/task_achieve', 'achieveController@func');
+// ログイン
+Route::get('/login', 'LoginController@index');
+Route::post('/login', 'LoginController@login');
+// 新規登録
+Route::get('/sign_up', 'LoginController@signUp');
+Route::post('/sign_up', 'LoginController@register');
+// ログアウト
+Route::get('/logout', 'LoginController@logout');
+// トップ
+Route::get('/', 'ToppageController@index');
+// タスク追加
+Route::get('/task_add', 'TaskController@add');
+Route::post('/task_confirm','TaskController@confirm');
+Route::post('/task_regist','TaskController@registration');
+// タスク編集
+Route::get('/task_change/{id}', 'TaskController@detail');
+// タスク履歴一覧
+Route::get('/task_history', 'historyController@index');
+// タスク履歴詳細
+Route::get('/history_details/{id}','TaskController@detail');
+// 達成率
+Route::get('/task_achieve', 'achieveController@index');

@@ -4,74 +4,76 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Lists;
+use Illuminate\Support\Facades\Redirect;
 
 class achieveController extends Controller
 {
-    public function show(){
-        return view('top');
+    /**
+     * ユーザ情報
+     */
+    private $loginUser = [];
+
+    /**
+     * 本日の日付
+     */
+    private $today = null;
+
+    /**
+     * コンストラクタ
+     * 
+     * @return void
+     */
+    public function __construct() {
+        // 未ログインの場合、ログイン画面へ返す
+        if (!session()->has('user_info')) {
+            Redirect::to(url('/login'))->send();
+        }
+        $this->loginUser = session('user_info');
+        date_default_timezone_set('Asia/Tokyo');
+        $week = array('(日)','(月)','(火)','(水)','(木)','(金)','(土)');
+        $this->today = date('Y年m月d日'). $week[date('w')];
     }
 
-    public function func(){
-
-        date_default_timezone_set('Asia/Tokyo');
-        //today
-        $t = date('Y-m-d');
-        $now = date('Y年m月d日');
-        $week = array('(日)','(月)','(火)','(水)','(木)','(金)','(土)');
-        $today = $now.$week[date('w')];
-
-        $sub_title = '達成率';
-
-        //lastweek
-        $yesterday = date('Y-m-d',strtotime('-1 day'));
-        
-        //lastweek
+    /**
+     * 達成率画面
+     * 
+     * @return void
+     */
+    public function index() {
+        // 先週の日付
         $lastweek = date('Y-m-d',strtotime('-7 day'));
-
-        //today tasks
-        $lists = lists::where(
-                'end_ymd','>=',$t
-            )->count();
-        
-        $achieve = lists::where([
-                ['end_ymd','>=',$t],
-                ['status',1]
-            ])->count();
-        
-        if($lists == 0){
-            $raito = 0;
-        }else{
-            $raito = floor($achieve / $lists * 100);
-        }
-
-        //weeks tasks
-        $weeklists =lists::whereBetween(
-            'start_ymd',[$lastweek,$t]
-        )->count();
-
-        $weekachieve =lists::where([
-            ['status',1],
-            ['start_ymd','<=',$t],
-            ['start_ymd','>=',$lastweek]
-        ])->count();
-
-        if($weeklists == 0){
-            $weekraito = 0;
-        }else{
-            $weekraito = floor($weekachieve / $weeklists * 100);
-        }
-
-
-        $data = [
-            'lists' => $lists,
-            'achieve' => $achieve,
-            'today' => $today,
-            'sub_title' => $sub_title,
+        // 今日のタスク
+        $todayTaskCount = lists::where(
+            'end_ymd', '>=', now()
+        )
+        ->count();
+        $todayTaskAchieve = lists::where([
+            ['end_ymd', '>=', now()],
+            ['status', 1]
+        ])
+        ->count();
+        $raito = $todayTaskCount === 0 ? 0 : floor($todayTaskAchieve / $todayTaskCount * 100);
+        // 今週のタスク
+        $weekTaskCount = lists::whereBetween(
+            'start_ymd', [$lastweek, now()]
+        )
+        ->count();
+        $weekTaskAchieve = lists::where([
+            ['status', 1],
+            ['start_ymd', '<=', now()],
+            ['start_ymd', '>=', $lastweek]
+        ])
+        ->count();
+        $weekRaito = $weekTaskCount == 0 ? 0 : floor($weekTaskAchieve / $weekTaskCount * 100);
+        return view('top', [
+            'today_task_count' => $todayTaskCount,
+            'today_task_achieve' => $todayTaskAchieve,
+            'today' => $this->today,
+            'sub_title' => '達成率',
             'raito' => $raito,
-            'weeklists' => $weeklists,
-            'weekachieve' => $weekachieve,
-            'weekraito' => $weekraito
-        ];
-        return view('top',$data);
+            'week_task_count' => $weekTaskCount,
+            'week_task_achieve' => $weekTaskAchieve,
+            'week_raito' => $weekRaito
+        ]);
     }
 }

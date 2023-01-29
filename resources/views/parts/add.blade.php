@@ -9,9 +9,7 @@
                     <input type="text" name="list_name">
                 </label>
                 @if ($errors->has('list_name'))
-                    <div>
-                        {{$errors->first('list_name')}}
-                    </div>
+                    <div>{{$errors->first('list_name')}}</div>
                 @endif
             </div>
             <div class="item_name">タスクの詳細</div>
@@ -20,9 +18,7 @@
                     <textarea name="list_details" id="" cols="30" rows="1"></textarea>
                 </label>
                 @if ($errors->has('list_details'))
-                    <div>
-                        {{$errors->first('list_details')}}
-                    </div>
+                    <div>{{$errors->first('list_details')}}</div>
                 @endif
             </div>
             <div class="item_name">期限</div>
@@ -32,9 +28,7 @@
                         <input type="datetime-local" name="start_ymd" min="{{$start_date}}">
                     </label>
                     @if ($errors->has('start_ymd'))
-                        <div>
-                            {{$errors->first('start_ymd')}}
-                        </div>
+                        <div>{{$errors->first('start_ymd')}}</div>
                     @endif
                 </div>
                 <div class="nami">〜</div>
@@ -43,9 +37,7 @@
                         <input type="datetime-local" name="end_ymd" min="{{$start_date}}">
                     </label>
                     @if ($errors->has('end_ymd'))
-                        <div>
-                            {{$errors->first('end_ymd')}}
-                        </div>
+                        <div>{{$errors->first('end_ymd')}}</div>
                     @endif
                 </div>
             </div>
